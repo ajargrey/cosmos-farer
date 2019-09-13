@@ -15,6 +15,7 @@ public class PlayerShip : MonoBehaviour
     bool movingRight = false;
 
     //Left and Right movement variables
+    float maxSidewayVelocity = 20f;
     float sidewayForce = 5f;
     
 
@@ -23,9 +24,9 @@ public class PlayerShip : MonoBehaviour
     bool movingBackward = false;
 
     // Forward and backward movement variables
-    float maxVelocityBarrier = 25f;
+    float maxLinearVelocity = 5f;
     float linearForce = 50f;
-    float originalLinearDrag = 0f;
+    float originalLinearDrag = 0.5f;
     float breakDrag = 15f;
     
 
@@ -34,8 +35,9 @@ public class PlayerShip : MonoBehaviour
     bool rotatingRight = false;
 
     //Rotation variabless
+    float maxAngularVelocity = 100f;
     float originalAngularDrag = 0.5f;
-    float angularForce = 25f;
+    float angularForce = 5f;
 
     //Shoot Input variables
     bool shotPressed = false;
@@ -49,10 +51,13 @@ public class PlayerShip : MonoBehaviour
     //Child and child dependent Object Variables
     GameObject playerShipBody;
     GameObject playerShipTurret;
+    GameObject playerTurretShootPoint;
 
     //Player Projectile Variables
     [SerializeField] GameObject playerProjectile;
     float projectileSpeed = 10f;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +69,7 @@ public class PlayerShip : MonoBehaviour
         rigidBody.angularDrag = originalAngularDrag;
         playerShipBody = gameObject.transform.Find("PlayerShipBody").gameObject;
         playerShipTurret = playerShipBody.transform.Find("PlayerShipTurret").gameObject;
+        playerTurretShootPoint = playerShipTurret.transform.Find("PlayerTurretBarrel").transform.Find("PlayerTurretShootPoint").gameObject;
 
     }
 
@@ -171,11 +177,11 @@ public class PlayerShip : MonoBehaviour
 
     private void controlRotation()
     {
-        if (rotatingRight)
+        if (rotatingRight && rigidBody.angularVelocity > -1 * maxAngularVelocity)
         {
             rigidBody.AddTorque(-1 * angularForce);
         }
-        else if (rotatingLeft)
+        else if (rotatingLeft && rigidBody.angularVelocity < maxAngularVelocity)
         {
             rigidBody.AddTorque(angularForce);
         }
@@ -186,10 +192,11 @@ public class PlayerShip : MonoBehaviour
     {
         if (movingForward)
         {   
-            if(rigidBody.velocity.magnitude < maxVelocityBarrier)
+            float currentAngleInDeg = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
+            float currentForwardVelocity = rigidBody.velocity.x * Mathf.Sin(currentAngleInDeg) + rigidBody.velocity.y * Mathf.Cos(currentAngleInDeg);
+            if (currentForwardVelocity < maxLinearVelocity)
             {
-                float currentAngleInDeg = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
-                rigidBody.AddForce(new Vector2(linearForce* Mathf.Sin(currentAngleInDeg), linearForce* Mathf.Cos(currentAngleInDeg) ) );
+                rigidBody.AddForce(new Vector2(linearForce * Mathf.Sin(currentAngleInDeg), linearForce * Mathf.Cos(currentAngleInDeg)));
             }
         }
 
@@ -207,14 +214,15 @@ public class PlayerShip : MonoBehaviour
 
     private void controlSidewayMotion()
     {
-
+        
         float currentAngleInDeg = (transform.localEulerAngles.z) * Mathf.Deg2Rad;
+        float currentSidewayVelocity = rigidBody.velocity.x * Mathf.Cos(currentAngleInDeg) + rigidBody.velocity.y * Mathf.Sin(currentAngleInDeg);
 
-        if (movingLeft)
+        if (movingLeft && -1*currentSidewayVelocity > -1*maxSidewayVelocity)
         {
             rigidBody.AddForce(new Vector2(-1 * sidewayForce * Mathf.Cos(currentAngleInDeg), -1 * sidewayForce * Mathf.Sin(currentAngleInDeg)));
         }
-        else if (movingRight)
+        else if (movingRight && currentSidewayVelocity < maxSidewayVelocity)
         {
             rigidBody.AddForce(new Vector2(sidewayForce * Mathf.Cos(currentAngleInDeg), sidewayForce * Mathf.Sin(currentAngleInDeg)));
 
@@ -225,7 +233,7 @@ public class PlayerShip : MonoBehaviour
     public void Shoot()
     {
         float projectileAngleInRad = transform.Find("PlayerShipBody").transform.Find("PlayerShipTurret").transform.eulerAngles.z * Mathf.Deg2Rad * -1;
-        GameObject projectile = Instantiate(playerProjectile, transform.position, playerShipTurret.transform.rotation);
+        GameObject projectile = Instantiate(playerProjectile, playerTurretShootPoint.transform.position, playerShipTurret.transform.rotation);
         projectile.GetComponent<SpriteRenderer>().sortingOrder = 2;
         projectile.GetComponent<Rigidbody2D>().velocity = new Vector2( Mathf.Sin(projectileAngleInRad) * projectileSpeed, Mathf.Cos(projectileAngleInRad) * projectileSpeed );
     }
