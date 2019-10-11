@@ -52,15 +52,15 @@ public class PlayerPawn1 : MonoBehaviour
 
     private void AutomatedBodyRotationControl()
     {
-        Debug.Log( (head.transform.rotation.z - transform.rotation.z) );
+        //Debug.Log( (head.transform.rotation.z - transform.rotation.z) );
         if (Mathf.Abs(head.transform.eulerAngles.z - transform.eulerAngles.z) > headRotationThresholdInDeg)
         {
             Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - head.transform.position.y), (mousePosInWorldUnits.x - head.transform.position.x));
             float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialDeflectionInDeg;
             var targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, finalAngleInDeg);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, automaticRotationSpeed);
-            Debug.Log("Should Initialise automated head rotation");
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, automaticRotationSpeed*Time.timeScale);
+            //Debug.Log("Should Initialise automated head rotation");
             //head.transform.eulerAngles = new Vector3(head.transform.eulerAngles.x, head.transform.eulerAngles.y, transform.eulerAngles.z);
         }
 
@@ -78,7 +78,7 @@ public class PlayerPawn1 : MonoBehaviour
         float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - head.transform.position.y), (mousePosInWorldUnits.x - head.transform.position.x));
         float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialDeflectionInDeg;
         var targetRotation = Quaternion.Euler(head.transform.eulerAngles.x, head.transform.eulerAngles.y, finalAngleInDeg);
-        head.transform.rotation = Quaternion.RotateTowards(head.transform.rotation, targetRotation, headRotationSpeed);
+        head.transform.rotation = Quaternion.RotateTowards(head.transform.rotation, targetRotation, headRotationSpeed*Time.timeScale);
     }
 
     private void ControlLinearMotion()

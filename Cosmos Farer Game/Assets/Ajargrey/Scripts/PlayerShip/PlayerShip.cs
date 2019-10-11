@@ -76,7 +76,7 @@ public class PlayerShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //TakeInput();
+        TakeInput();
         ControlShoot();
         Move();
     }
