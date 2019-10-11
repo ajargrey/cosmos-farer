@@ -76,7 +76,7 @@ public class PlayerShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TakeInput();
+        //TakeInput();
         ControlShoot();
         Move();
     }
@@ -192,11 +192,11 @@ public class PlayerShip : MonoBehaviour
     {
         if (movingForward)
         {   
-            float currentAngleInDeg = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
-            float currentForwardVelocity = rigidBody.velocity.x * Mathf.Sin(currentAngleInDeg) + rigidBody.velocity.y * Mathf.Cos(currentAngleInDeg);
+            float currentAngleInRad = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
+            float currentForwardVelocity = rigidBody.velocity.x * Mathf.Sin(currentAngleInRad) + rigidBody.velocity.y * Mathf.Cos(currentAngleInRad);
             if (currentForwardVelocity < maxLinearVelocity)
             {
-                rigidBody.AddForce(new Vector2(linearForce * Mathf.Sin(currentAngleInDeg), linearForce * Mathf.Cos(currentAngleInDeg)));
+                rigidBody.AddForce(new Vector2(linearForce * Mathf.Sin(currentAngleInRad), linearForce * Mathf.Cos(currentAngleInRad)));
             }
         }
 

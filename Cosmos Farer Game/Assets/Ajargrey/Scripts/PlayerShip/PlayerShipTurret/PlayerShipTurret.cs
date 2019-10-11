@@ -32,7 +32,7 @@ public class PlayerShipTurret : MonoBehaviour
     {
         Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
-        float finalAngle = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection ;
+        float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection ;
         var targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad*Mathf.Rad2Deg - initialAngleDeflection ) ;
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime) ;
         if(GetComponent<Rigidbody2D>().angularVelocity > 0  && playerShip.GetComponent<Rigidbody2D>().angularVelocity > 0)
@@ -51,7 +51,7 @@ public class PlayerShipTurret : MonoBehaviour
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
         }
-        Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
+        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
         transform.position = playerShip.transform.position;
 
 
