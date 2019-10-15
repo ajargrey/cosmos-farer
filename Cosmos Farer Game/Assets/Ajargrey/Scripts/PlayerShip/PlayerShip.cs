@@ -6,6 +6,8 @@ using UnityEngine.Animations;
 
 public class PlayerShip : MonoBehaviour
 {
+    //Health Variables
+    float playerHealth = 5f;
 
     //Mass
     float mass = 10f;
@@ -79,6 +81,7 @@ public class PlayerShip : MonoBehaviour
         TakeInput();
         ControlShoot();
         Move();
+        ControlHealth();
     }
 
     private void ControlShoot()
@@ -87,6 +90,7 @@ public class PlayerShip : MonoBehaviour
         {                           
             //In animation event calls Shoot Function
             playerShipTurret.GetComponent<Animation>().Play("PlayerTurretBarrelShootAnimation");
+            Debug.Log("Shot");
         }
     }
 
@@ -236,5 +240,23 @@ public class PlayerShip : MonoBehaviour
         GameObject projectile = Instantiate(playerProjectile, playerTurretShootPoint.transform.position, playerShipTurret.transform.rotation);
         projectile.GetComponent<SpriteRenderer>().sortingOrder = 2;
         projectile.GetComponent<Rigidbody2D>().velocity = new Vector2( Mathf.Sin(projectileAngleInRad) * projectileSpeed, Mathf.Cos(projectileAngleInRad) * projectileSpeed );
+    }
+
+    public void HitByPlayerProjectile(float damage)
+    {
+        playerHealth -= damage;
+    }
+
+    private void ControlHealth()
+    {
+        if (playerHealth <= 0)
+        {
+            DestroyPlayer();
+        }
+    }
+
+    private void DestroyPlayer()
+    {
+        Destroy(gameObject);
     }
 }

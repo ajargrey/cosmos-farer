@@ -9,6 +9,9 @@ public class PlayerProjectile : MonoBehaviour
     //Mass
     float originalMass = 1f;
 
+    //Damage
+    float damage = 1f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,8 +27,10 @@ public class PlayerProjectile : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        ProjectileCollided();
+       collision.transform.SendMessage("HitByPlayerProjectile", damage);
+       ProjectileCollided();
     }
+
 
     private void ProjectileCollided()
     {

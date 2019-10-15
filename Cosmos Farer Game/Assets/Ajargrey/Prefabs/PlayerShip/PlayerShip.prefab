@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 1176964282279567873}
   m_Layer: 8
   m_Name: PlayerShip
-  m_TagString: Untagged
+  m_TagString: PlayerShip
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -258,21 +258,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 5959621237373820857, guid: db212039508918a45af9eb3a6001860a,
-        type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7052405292554980590, guid: db212039508918a45af9eb3a6001860a,
-        type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8999983648034059440, guid: db212039508918a45af9eb3a6001860a,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 8100080928468723107, guid: db212039508918a45af9eb3a6001860a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -328,6 +313,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7052405292554980590, guid: db212039508918a45af9eb3a6001860a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4787932523938831582, guid: db212039508918a45af9eb3a6001860a,
         type: 3}
       propertyPath: m_Animation
@@ -343,11 +333,21 @@ PrefabInstance:
       propertyPath: m_PlayAutomatically
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5959621237373820857, guid: db212039508918a45af9eb3a6001860a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4081588288148176216, guid: db212039508918a45af9eb3a6001860a,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 83334931375a81b44b52b605aa58771f, type: 2}
+    - target: {fileID: 8999983648034059440, guid: db212039508918a45af9eb3a6001860a,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db212039508918a45af9eb3a6001860a, type: 3}
 --- !u!4 &4055380640325317248 stripped

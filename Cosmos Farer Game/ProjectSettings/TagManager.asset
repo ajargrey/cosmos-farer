@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PlayerShip
   layers:
   - Default
   - TransparentFX
@@ -13,20 +14,20 @@ TagManager:
   - UI
   - 
   - 
-  - Player
-  - PlayerProjectile
+  - PlayerShip
+  - 
+  - 
+  - 
+  - PlayerShipProjectile
+  - 
+  - 
   - Enemy
+  - 
+  - 
   - EnemyProjectile
+  - 
+  - 
   - Debris
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 

@@ -9,12 +9,16 @@ public class PlayerPawn1 : MonoBehaviour
     //Input States
     bool upPressed = false;
     bool downPressed = false;
-    bool leftPressed = false;
-    bool rightPressed = false;
+    bool leftPressed = false; //Used for rotation
+    bool rightPressed = false;  //USed for rotation
+    bool strifeLeftPressed = false;
+    bool strifeRightPressed = false;
 
     //Movement Variables
+    Vector2 currentVelocity = Vector2.zero;
     float moveForwardSpeed = 0.2f;
     float moveBackwardSpeed = 0.1f;
+    float moveSidewaySpeed = 0.15f;
 
     //Rotation Variables
     float rotationSpeed = 100f;
@@ -68,8 +72,29 @@ public class PlayerPawn1 : MonoBehaviour
 
     private void Move()
     {
-        ControlLinearMotion();
+        ControlLinearAndSidewayMotion();
         ControlRotation();
+    }
+
+    private void ControlLinearAndSidewayMotion()
+    {
+        currentVelocity = Vector2.zero;
+        ControlLinearMotion();
+        ControlSidewayMotion();
+        rigidBody.velocity = currentVelocity;
+    }
+
+    private void ControlSidewayMotion()
+    {
+        float currentAngleInRad = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
+        if (strifeLeftPressed)
+        {
+            currentVelocity -= new Vector2(moveSidewaySpeed * Mathf.Cos(currentAngleInRad), -1 * moveSidewaySpeed * Mathf.Sin(currentAngleInRad));
+        }
+        else if (strifeRightPressed)
+        {
+            currentVelocity += new Vector2(moveSidewaySpeed * Mathf.Cos(currentAngleInRad), -1 * moveSidewaySpeed * Mathf.Sin(currentAngleInRad));
+        }
     }
 
     private void HeadRotationControl()
@@ -83,7 +108,6 @@ public class PlayerPawn1 : MonoBehaviour
 
     private void ControlLinearMotion()
     {
-        Vector2 currentVelocity = Vector2.zero;
         float currentAngleInRad = -1 * (transform.localEulerAngles.z) * Mathf.Deg2Rad;
         if (upPressed)
         {
@@ -93,7 +117,6 @@ public class PlayerPawn1 : MonoBehaviour
         {
             currentVelocity -= new Vector2(moveBackwardSpeed * Mathf.Sin(currentAngleInRad), moveBackwardSpeed * Mathf.Cos(currentAngleInRad));
         }
-        rigidBody.velocity = currentVelocity;
     }
 
     private void ControlRotation()
@@ -113,10 +136,30 @@ public class PlayerPawn1 : MonoBehaviour
     private void TakeInput()
     {
         LinearMotionInput();
+        rotationMotionInput();
         sidewayMotionInput();
     }
 
     private void sidewayMotionInput()
+    {
+        if ( Input.GetKey(KeyCode.Q) )
+        {
+            strifeLeftPressed = true;
+            strifeRightPressed = false;
+        }
+        else if (Input.GetKey(KeyCode.E))
+        {
+            strifeRightPressed = true;
+            strifeLeftPressed = false;
+        }
+        else
+        {
+            strifeLeftPressed = false;
+            strifeRightPressed = false;
+        }
+    }
+
+    private void rotationMotionInput()
     {
         if (Input.GetKey(KeyCode.A))
         {

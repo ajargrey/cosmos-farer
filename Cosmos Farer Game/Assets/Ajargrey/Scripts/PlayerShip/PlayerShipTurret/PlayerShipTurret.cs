@@ -25,10 +25,10 @@ public class PlayerShipTurret : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getMouseAngle();
+        getMouseAngleAndSetRotationVelocity();
     }
 
-    private void getMouseAngle()
+    private void getMouseAngleAndSetRotationVelocity()
     {
         Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
