@@ -90,7 +90,6 @@ public class PlayerShip : MonoBehaviour
         {                           
             //In animation event calls Shoot Function
             playerShipTurret.GetComponent<Animation>().Play("PlayerTurretBarrelShootAnimation");
-            Debug.Log("Shot");
         }
     }
 
@@ -112,7 +111,7 @@ public class PlayerShip : MonoBehaviour
 
     private void shootInput()
     {
-        if( Input.GetMouseButtonDown(0) )
+        if( Input.GetMouseButton(0) )
         {
             shotPressed = true;
         }

@@ -56,7 +56,6 @@ public class PlayerPawn1 : MonoBehaviour
 
     private void AutomatedBodyRotationControl()
     {
-        //Debug.Log( (head.transform.rotation.z - transform.rotation.z) );
         if (Mathf.Abs(head.transform.eulerAngles.z - transform.eulerAngles.z) > headRotationThresholdInDeg)
         {
             Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -64,7 +63,6 @@ public class PlayerPawn1 : MonoBehaviour
             float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialDeflectionInDeg;
             var targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, finalAngleInDeg);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, automaticRotationSpeed*Time.timeScale);
-            //Debug.Log("Should Initialise automated head rotation");
             //head.transform.eulerAngles = new Vector3(head.transform.eulerAngles.x, head.transform.eulerAngles.y, transform.eulerAngles.z);
         }
 

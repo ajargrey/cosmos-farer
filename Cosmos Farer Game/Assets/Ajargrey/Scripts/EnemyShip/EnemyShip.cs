@@ -6,6 +6,10 @@ using UnityEngine;
 public class EnemyShip : MonoBehaviour
 {
 
+    //Active Variables
+    bool active = false;
+    float maxDistanceToStayActive = 10f;
+
     // Health Variables
     float enemyHealth = 3;
 
@@ -34,6 +38,7 @@ public class EnemyShip : MonoBehaviour
     float reloadSpeed = 2f;
     float reloadTimerMax = 5f;
     float reloadTimerCurrent = 0f;
+    float maxDistanceToShoot = 5f;
 
     // Start is called before the first frame update
     void Start()
@@ -46,14 +51,35 @@ public class EnemyShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ActivationControl();
         MoveTowardsPlayerShip();
         RotateTowardsPlayerShip();
         ShootControl();
         HealthControl();
     }
 
+    private void ActivationControl()
+    {
+        if (Vector2.Distance(transform.position, playerShip.transform.position) < maxDistanceToStayActive)
+        {
+            active = true;
+        }
+        else
+        {
+            active = false;
+        }
+    }
+
     private void ShootControl()
     {
+        if(!active)
+        {
+            return;
+        }
+        if(Vector2.Distance(transform.position, playerShip.transform.position) > maxDistanceToShoot)
+        {
+            return;
+        }
         if (! reloaded)
         {
             if (reloadTimerCurrent > reloadTimerMax)
@@ -83,6 +109,10 @@ public class EnemyShip : MonoBehaviour
 
     private void RotateTowardsPlayerShip()
     {
+        if(!active)
+        {
+            return;
+        }
         transform.LookAt(playerShip.transform.position); //LookAt works in respect to 3d Space
         transform.right = playerShip.transform.position - transform.position; //Hence the modification, transform.right changes position on x axis (red arrow) while taking in consideration rotation
         transform.eulerAngles += new Vector3(0, 0, initialAngleDefect);
@@ -90,6 +120,11 @@ public class EnemyShip : MonoBehaviour
 
     private void MoveTowardsPlayerShip()
     {   
+        if(!active)
+        {
+            rigidBody.velocity = new Vector2(0, 0);
+            return;
+        }
         float rotAngleInRad = -1 * transform.eulerAngles.z * Mathf.Deg2Rad;
         if (Vector2.Distance(transform.position, playerShip.transform.position) > minDistanceFromPlayer)
         {
@@ -116,6 +151,9 @@ public class EnemyShip : MonoBehaviour
 
     private void DestroyEnemy()
     {
-        Destroy(gameObject);
+        if(gameObject)
+        {
+            Destroy(gameObject);
+        }
     }
 }

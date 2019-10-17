@@ -28,7 +28,6 @@ public class GameStatus : MonoBehaviour
     {
         GetPauseInput();
         PauseControl();
-        Debug.Log(isPaused);
     }
 
     private void PauseControl()
@@ -48,7 +47,6 @@ public class GameStatus : MonoBehaviour
         if ( Input.GetKeyDown(KeyCode.Escape) )
         {
             isPaused = !isPaused;
-            Debug.Log("Pressed Escape");
         }
     }
 }

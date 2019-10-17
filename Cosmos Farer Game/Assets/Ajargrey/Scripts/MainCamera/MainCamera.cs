@@ -11,8 +11,8 @@ public class MainCamera : MonoBehaviour
     //Zoom Variables
     float zoomSpeed = 5f;
     float smoothSpeed = 10f;
-    float minOrtho = 1f;
-    float maxOrtho = 20f;
+    float minOrtho = 0.25f;
+    float maxOrtho = 40f;
     float targetOrtho;
     
     // Start is called before the first frame update
@@ -55,6 +55,10 @@ public class MainCamera : MonoBehaviour
     private void ResetZoomSpeeds()
     {
         zoomSpeed = Mathf.RoundToInt(Camera.main.orthographicSize);
+        if (zoomSpeed==0)
+        {
+            zoomSpeed = 1;
+        }
         smoothSpeed = 2 * zoomSpeed;
     }
 
