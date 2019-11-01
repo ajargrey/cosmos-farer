@@ -44,6 +44,12 @@ public class PlayerShip : MonoBehaviour
     //Shoot Input variables
     bool shotPressed = false;
 
+    //Fuel Variables
+    float maxFuel = 100f;
+    float currentFuel = 100f;
+    float forwardAccelerationFuelBurnRate = 0f; //1
+    float sidewayAccelerationFuelBurnRate = 0.0f; //0.5
+
     // Misc
     //float closeTo0 = 0.1f;
 
@@ -53,13 +59,18 @@ public class PlayerShip : MonoBehaviour
     //Child and child dependent Object Variables
     GameObject playerShipBody;
     GameObject playerShipTurret;
-    GameObject playerTurretShootPoint;
+    GameObject playerTurretShootPoint_left;
+    GameObject playerTurretShootPoint_right;
 
     //Player Projectile Variables
-    [SerializeField] GameObject playerProjectile;
+    [SerializeField] PlayerProjectile playerProjectile;
     float projectileSpeed = 10f;
 
-
+    //Turret Variables
+    int selectedTurretNumber = 1;//0-nil, 1-(machine) turret, 2-big turret, 3-side turret
+    string selectedTurretName = "PlayerShipTurret";
+    GameObject selectedTurret;
+    bool weaponSwitched = false;
 
     // Start is called before the first frame update
     void Start()
@@ -70,27 +81,86 @@ public class PlayerShip : MonoBehaviour
         rigidBody.drag = originalLinearDrag;
         rigidBody.angularDrag = originalAngularDrag;
         playerShipBody = gameObject.transform.Find("PlayerShipBody").gameObject;
-        playerShipTurret = playerShipBody.transform.Find("PlayerShipTurret").gameObject;
-        playerTurretShootPoint = playerShipTurret.transform.Find("PlayerTurretBarrel").transform.Find("PlayerTurretShootPoint").gameObject;
 
+        playerShipTurret = playerShipBody.transform.Find("PlayerShipBigTurret").gameObject;
+        playerTurretShootPoint_left = playerShipTurret.transform.Find("PlayerTurretBarrelLeft").transform.Find("PlayerTurretShootPoint").gameObject;
+        playerTurretShootPoint_right = playerShipTurret.transform.Find("PlayerTurretBarrelRight").transform.Find("PlayerTurretShootPoint").gameObject;
+        selectedTurret = playerShipTurret;
+
+        currentFuel = maxFuel;
     }
 
     // Update is called once per frame
     void Update()
     {
         TakeInput();
+        WeaponSelectionControl();
         ControlShoot();
         Move();
         ControlHealth();
+        //Debug.Log("Fuel Level : " + currentFuel);
+    }
+
+    private void WeaponSelectionControl()
+    {
+        if(!weaponSwitched)
+        {
+            return;
+        }
+
+        //if command to switch weapon has been issued, before actually assigning new weapon, first stop shooting activities of old weapon
+        selectedTurret.GetComponent<Animator>().SetBool("Attacking", false);
+
+
+        switch (selectedTurretNumber)
+        {
+            case 0:
+                selectedTurretName = "";
+                break;
+            case 1:
+                selectedTurretName = "PlayerShipTurret"; //Machine Turret - the basic one
+                break;
+            case 2:
+                selectedTurretName = "PlayerShipBigTurret";
+                break;
+            case 3:
+                selectedTurretName = "PlayerShipSideTurret";
+                break;
+            default:
+                break;
+        }
+        if(selectedTurretNumber!=0)
+        {
+            selectedTurret = playerShipBody.transform.Find(selectedTurretName).gameObject;
+        }
+
+
     }
 
     private void ControlShoot()
     {
-        if( shotPressed )
-        {                           
-            //In animation event calls Shoot Function
-            playerShipTurret.GetComponent<Animation>().Play("PlayerTurretBarrelShootAnimation");
+        if (selectedTurretNumber==0)
+        {
+            return;
         }
+
+        if( shotPressed )
+        {
+            //In animation event calls Shoot Function
+            selectedTurret.GetComponent<Animator>().SetBool("Attacking", true);
+            //Debug.Log("Should be shooting");
+        }
+        else if(! shotPressed)
+        {
+            selectedTurret.GetComponent<Animator>().SetBool("Attacking", false);
+        }
+
+        if(weaponSwitched == true)
+        {
+            weaponSwitched = false; //The weapon has been switched already, and we have not received any input to switch it further
+        }
+
+
     }
 
     public void Move()
@@ -103,10 +173,37 @@ public class PlayerShip : MonoBehaviour
 
     private void TakeInput()
     {
+        weaponSelectionInput();
         shootInput();
         linearMotionInput();
         sidewayMotionInput();
         rotationMotionInput();
+    }
+
+    private void weaponSelectionInput()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            selectedTurretNumber = 0;
+            weaponSwitched = true;
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            selectedTurretNumber = 1;
+            weaponSwitched = true;
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            selectedTurretNumber = 2;
+            weaponSwitched = true;
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            selectedTurretNumber = 3;
+            weaponSwitched = true;
+        } 
+
+        //Keeping a weaponSwitched Variable, helps us in changing weapons only once the key has been pressed, thus proving more optimized
     }
 
     private void shootInput()
@@ -199,7 +296,11 @@ public class PlayerShip : MonoBehaviour
             float currentForwardVelocity = rigidBody.velocity.x * Mathf.Sin(currentAngleInRad) + rigidBody.velocity.y * Mathf.Cos(currentAngleInRad);
             if (currentForwardVelocity < maxLinearVelocity)
             {
-                rigidBody.AddForce(new Vector2(linearForce * Mathf.Sin(currentAngleInRad), linearForce * Mathf.Cos(currentAngleInRad)));
+                if (currentFuel >= forwardAccelerationFuelBurnRate)
+                {
+                    rigidBody.AddForce(new Vector2(linearForce * Mathf.Sin(currentAngleInRad), linearForce * Mathf.Cos(currentAngleInRad)));
+                    currentFuel -= forwardAccelerationFuelBurnRate;
+                }
             }
         }
 
@@ -223,22 +324,41 @@ public class PlayerShip : MonoBehaviour
 
         if (movingLeft && -1*currentSidewayVelocity > -1*maxSidewayVelocity)
         {
-            rigidBody.AddForce(new Vector2(-1 * sidewayForce * Mathf.Cos(currentAngleInDeg), -1 * sidewayForce * Mathf.Sin(currentAngleInDeg)));
+            if(currentFuel > sidewayAccelerationFuelBurnRate)
+            {
+                rigidBody.AddForce(new Vector2(-1 * sidewayForce * Mathf.Cos(currentAngleInDeg), -1 * sidewayForce * Mathf.Sin(currentAngleInDeg)));
+                currentFuel -= sidewayAccelerationFuelBurnRate;
+            }
         }
         else if (movingRight && currentSidewayVelocity < maxSidewayVelocity)
         {
-            rigidBody.AddForce(new Vector2(sidewayForce * Mathf.Cos(currentAngleInDeg), sidewayForce * Mathf.Sin(currentAngleInDeg)));
-
+            if(currentFuel > sidewayAccelerationFuelBurnRate)
+            {
+                rigidBody.AddForce(new Vector2(sidewayForce * Mathf.Cos(currentAngleInDeg), sidewayForce * Mathf.Sin(currentAngleInDeg)));
+                currentFuel -= sidewayAccelerationFuelBurnRate;
+            }
         }
 
     }
 
-    public void Shoot()
+    public void ShootFromTurret(bool left, string turretName)
     {
-        float projectileAngleInRad = transform.Find("PlayerShipBody").transform.Find("PlayerShipTurret").transform.eulerAngles.z * Mathf.Deg2Rad * -1;
-        GameObject projectile = Instantiate(playerProjectile, playerTurretShootPoint.transform.position, playerShipTurret.transform.rotation);
+        playerShipTurret = playerShipBody.transform.Find(turretName).gameObject;
+        playerTurretShootPoint_left = playerShipTurret.transform.Find("PlayerTurretBarrelLeft").transform.Find("PlayerTurretShootPoint").gameObject;
+        if(left==false)
+        {
+            playerTurretShootPoint_right = playerShipTurret.transform.Find("PlayerTurretBarrelRight").transform.Find("PlayerTurretShootPoint").gameObject;
+        }
+
+        float projectileAngleInRad = transform.Find("PlayerShipBody").transform.Find(turretName).transform.eulerAngles.z * Mathf.Deg2Rad * -1;
+        Vector3 projectilePosition = playerTurretShootPoint_left.transform.position;
+        if (!left)
+        {
+            projectilePosition = playerTurretShootPoint_right.transform.position;
+        }
+        PlayerProjectile projectile = Instantiate(playerProjectile, projectilePosition, playerShipTurret.transform.rotation) as PlayerProjectile;
         projectile.GetComponent<SpriteRenderer>().sortingOrder = 2;
-        projectile.GetComponent<Rigidbody2D>().velocity = new Vector2( Mathf.Sin(projectileAngleInRad) * projectileSpeed, Mathf.Cos(projectileAngleInRad) * projectileSpeed );
+        projectile.SetupProjectile(turretName, projectileAngleInRad);
     }
 
     public void HitByPlayerProjectile(float damage)
