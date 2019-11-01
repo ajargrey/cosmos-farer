@@ -12,6 +12,12 @@ public class PlayerProjectile : MonoBehaviour
     //Damage
     float damage = 1f;
 
+    //Speed
+    float projectileSpeed = 10f;
+
+    //Sprite Array
+    [SerializeField] Sprite[] spriteArray;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,4 +47,31 @@ public class PlayerProjectile : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    public void SetupProjectile(String turretName, float projectileAngleInRad)
+    {
+        GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Sin(projectileAngleInRad) * projectileSpeed, Mathf.Cos(projectileAngleInRad) * projectileSpeed);
+        switch(turretName)
+        {
+            case "PlayerShipTurret":
+                GetComponent<SpriteRenderer>().sprite = spriteArray[1];
+                GetComponent<SpriteRenderer>().sortingOrder = 3;
+                break;
+
+            case "PlayerShipBigTurret":
+                GetComponent<SpriteRenderer>().sprite = spriteArray[2];
+                GetComponent<SpriteRenderer>().sortingOrder = 3;
+                break;
+
+            case "PlayerShipSideTurret":
+                GetComponent<SpriteRenderer>().sprite = spriteArray[3];
+                GetComponent<SpriteRenderer>().sortingOrder = -5;
+                break;
+
+            default:
+                break;
+                
+        }
+    }
+
 }
