@@ -161,6 +161,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteArray:
   - {fileID: -1956232513718356886, guid: b411c5c917ef79a44b829203dab55f88, type: 3}
-  - {fileID: 4750956299571984040, guid: b411c5c917ef79a44b829203dab55f88, type: 3}
+  - {fileID: -1956232513718356886, guid: b411c5c917ef79a44b829203dab55f88, type: 3}
   - {fileID: 4750956299571984040, guid: b411c5c917ef79a44b829203dab55f88, type: 3}
   - {fileID: 4750956299571984040, guid: b411c5c917ef79a44b829203dab55f88, type: 3}

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerShipBigTurret : MonoBehaviour
 {
+    //Rotation Active
+    bool rotationActive = false;
 
     //Mouse Variables
     float initialAngleDeflection = 90f;
@@ -39,18 +41,16 @@ public class PlayerShipBigTurret : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getMouseAngleAndSetRotationVelocity();
+        if(rotationActive)
+        {
+            getMouseAngleAndSetRotationVelocity();
+        }
+        setPosition();
+        controlRotationAgainstShip();
     }
 
-    private void getMouseAngleAndSetRotationVelocity()
+    private void controlRotationAgainstShip()
     {
-        LimitRotation();
-
-        Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
-        float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection;
-        targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime);
         if (GetComponent<Rigidbody2D>().angularVelocity > 0 && playerShip.GetComponent<Rigidbody2D>().angularVelocity > 0)
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
@@ -67,8 +67,24 @@ public class PlayerShipBigTurret : MonoBehaviour
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
         }
-        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
+    }
+
+    private void setPosition()
+    {
         transform.position = playerShipBigTurretPosition.transform.position;
+    }
+
+    private void getMouseAngleAndSetRotationVelocity()
+    {
+        LimitRotation();
+
+        Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
+        float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection;
+        targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime);
+       
+        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
 
         //Debug.Log(mouseAngleInRad);
         LimitRotation();
@@ -92,4 +108,17 @@ public class PlayerShipBigTurret : MonoBehaviour
         }
         playerShip.ShootFromTurret(isLeft, "PlayerShipBigTurret");
     }
+
+    public void activateRotation(bool enable)
+    {
+        if (enable)
+        {
+            rotationActive = true;
+        }
+        else if (!enable)
+        {
+            rotationActive = false;
+        }
+    }
+
 }

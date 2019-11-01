@@ -55,12 +55,12 @@ public class PlayerProjectile : MonoBehaviour
         {
             case "PlayerShipTurret":
                 GetComponent<SpriteRenderer>().sprite = spriteArray[1];
-                GetComponent<SpriteRenderer>().sortingOrder = 3;
+                GetComponent<SpriteRenderer>().sortingOrder = 1;
                 break;
 
             case "PlayerShipBigTurret":
                 GetComponent<SpriteRenderer>().sprite = spriteArray[2];
-                GetComponent<SpriteRenderer>().sortingOrder = 3;
+                GetComponent<SpriteRenderer>().sortingOrder = 1;
                 break;
 
             case "PlayerShipSideTurret":

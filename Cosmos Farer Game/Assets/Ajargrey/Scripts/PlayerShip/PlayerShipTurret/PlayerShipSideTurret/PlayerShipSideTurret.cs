@@ -9,6 +9,9 @@ using UnityEngine;
 public class PlayerShipSideTurret : MonoBehaviour
 {
 
+    //Rotation Active
+    bool rotationActive = false;
+
     //Mouse Variables
     float initialAngleDeflection = 90f;
 
@@ -42,7 +45,17 @@ public class PlayerShipSideTurret : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getMouseAngleAndSetRotationVelocity();
+        if(rotationActive)
+        {
+            getMouseAngleAndSetRotationVelocity();
+        }
+        setPosition();
+        controlRotationAgainstShip();
+    }
+
+    private void setPosition()
+    {
+        transform.position = playerShipSideTurretPosition.transform.position;
     }
 
     private void getMouseAngleAndSetRotationVelocity()
@@ -54,6 +67,15 @@ public class PlayerShipSideTurret : MonoBehaviour
         float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection;
         targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime);
+        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
+  
+
+        //Debug.Log(mouseAngleInRad);
+        LimitRotation();
+    }
+
+    private void controlRotationAgainstShip()
+    {
         if (GetComponent<Rigidbody2D>().angularVelocity > 0 && playerShip.GetComponent<Rigidbody2D>().angularVelocity > 0)
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
@@ -70,11 +92,6 @@ public class PlayerShipSideTurret : MonoBehaviour
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
         }
-        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
-        transform.position = playerShipSideTurretPosition.transform.position;
-
-        //Debug.Log(mouseAngleInRad);
-        LimitRotation();
     }
 
     private void LimitRotation()
@@ -88,4 +105,17 @@ public class PlayerShipSideTurret : MonoBehaviour
         bool isLeft = true;
         playerShip.ShootFromTurret(isLeft, "PlayerShipSideTurret");
     }
+
+    public void activateRotation(bool enable)
+    {
+        if (enable)
+        {
+            rotationActive = true;
+        }
+        else if (!enable)
+        {
+            rotationActive = false;
+        }
+    }
+
 }

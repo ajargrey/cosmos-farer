@@ -67,9 +67,9 @@ public class PlayerShip : MonoBehaviour
     float projectileSpeed = 10f;
 
     //Turret Variables
-    int selectedTurretNumber = 1;//0-nil, 1-(machine) turret, 2-big turret, 3-side turret
-    string selectedTurretName = "PlayerShipTurret";
-    GameObject selectedTurret;
+    int selectedTurretNumber = 0;//0-nil, 1-(machine) turret, 2-big turret, 3-side turret
+    string selectedTurretName = "";
+    GameObject selectedTurret = null;
     bool weaponSwitched = false;
 
     // Start is called before the first frame update
@@ -111,6 +111,7 @@ public class PlayerShip : MonoBehaviour
         //if command to switch weapon has been issued, before actually assigning new weapon, first stop shooting activities of old weapon
         selectedTurret.GetComponent<Animator>().SetBool("Attacking", false);
 
+        changeTurretRotationActivityByName("disable"); //Disabling the old turret script
 
         switch (selectedTurretNumber)
         {
@@ -132,6 +133,7 @@ public class PlayerShip : MonoBehaviour
         if(selectedTurretNumber!=0)
         {
             selectedTurret = playerShipBody.transform.Find(selectedTurretName).gameObject;
+            changeTurretRotationActivityByName("enable"); // enabling the new turret script
         }
 
 
@@ -203,8 +205,52 @@ public class PlayerShip : MonoBehaviour
             weaponSwitched = true;
         } 
 
+        if (weaponSwitched)
+        {
+            //nothing for now
+        }
+
         //Keeping a weaponSwitched Variable, helps us in changing weapons only once the key has been pressed, thus proving more optimized
     }
+
+    private void changeTurretRotationActivityByName(String command)
+    {
+        if (selectedTurretName == "")
+        {
+            return;
+        }
+        if (command=="enable")
+        {
+            if(selectedTurretName == "PlayerShipTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipTurret>().activateRotation(true);
+            }
+            else if (selectedTurretName == "PlayerShipSideTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipSideTurret>().activateRotation(true);
+            }
+            else if (selectedTurretName == "PlayerShipBigTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipBigTurret>().activateRotation(true);
+            }
+        }
+        else if (command == "disable")
+        {
+            if (selectedTurretName == "PlayerShipTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipTurret>().activateRotation(false);
+            }
+            else if (selectedTurretName == "PlayerShipSideTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipSideTurret>().activateRotation(false);
+            }
+            else if (selectedTurretName == "PlayerShipBigTurret")
+            {
+                GameObject.Find(selectedTurretName).GetComponent<PlayerShipBigTurret>().activateRotation(false);
+            }
+        }
+    }
+
 
     private void shootInput()
     {

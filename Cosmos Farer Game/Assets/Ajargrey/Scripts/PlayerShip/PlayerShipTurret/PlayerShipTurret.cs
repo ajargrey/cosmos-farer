@@ -6,6 +6,9 @@ using UnityEngine;
 public class PlayerShipTurret : MonoBehaviour
 {
 
+    //Rotation Active
+    bool rotationActive = false;
+
     //Mouse Variables
     float initialAngleDeflection = 90f;
 
@@ -30,17 +33,17 @@ public class PlayerShipTurret : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getMouseAngleAndSetRotationVelocity();
+        if (rotationActive)
+        {
+            getMouseAngleAndSetRotationVelocity();
+        }
+        setPosition();
+        controlRotationAgainstShip();
     }
 
-    private void getMouseAngleAndSetRotationVelocity()
+    private void controlRotationAgainstShip()
     {
-        Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
-        float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection ;
-        var targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad*Mathf.Rad2Deg - initialAngleDeflection ) ;
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime) ;
-        if(GetComponent<Rigidbody2D>().angularVelocity > 0  && playerShip.GetComponent<Rigidbody2D>().angularVelocity > 0)
+        if (GetComponent<Rigidbody2D>().angularVelocity > 0 && playerShip.GetComponent<Rigidbody2D>().angularVelocity > 0)
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
         }
@@ -56,8 +59,22 @@ public class PlayerShipTurret : MonoBehaviour
         {
             rotationVelocity = defaultRotationVelocity - playerShip.GetComponent<Rigidbody2D>().angularVelocity;
         }
-        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
+    }
+
+    private void setPosition()
+    {
         transform.position = playerShipTurretPosition.transform.position;
+    }
+
+    private void getMouseAngleAndSetRotationVelocity()
+    {
+        Vector2 mousePosInWorldUnits = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        float mouseAngleInRad = Mathf.Atan2((mousePosInWorldUnits.y - transform.position.y), (mousePosInWorldUnits.x - transform.position.x));
+        float finalAngleInDeg = mouseAngleInRad * Mathf.Rad2Deg - initialAngleDeflection ;
+        var targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, mouseAngleInRad*Mathf.Rad2Deg - initialAngleDeflection ) ;
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationVelocity * Time.deltaTime) ;
+      
+        // Debug.Log(playerShip.GetComponent<Rigidbody2D>().angularVelocity + " " + targetRotation.z);
 
     }
 
@@ -73,5 +90,17 @@ public class PlayerShipTurret : MonoBehaviour
             isLeft = true;
         }
         playerShip.ShootFromTurret(isLeft, "PlayerShipTurret");
+    }
+
+    public void activateRotation(bool enable)
+    {
+        if(enable)
+        {
+            rotationActive = true;
+        }
+        else if(!enable)
+        {
+            rotationActive = false;
+        }
     }
 }
